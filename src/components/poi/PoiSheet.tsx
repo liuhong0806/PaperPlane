@@ -62,24 +62,24 @@ export default function PoiSheet(props: {
       />
 
       <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-6xl px-4 pb-4 md:inset-y-0 md:right-0 md:left-auto md:w-[460px] md:px-0 md:pb-0">
-        <Card className="relative max-h-[82dvh] overflow-hidden rounded-3xl border border-[rgb(37_99_235)] bg-[rgb(29_78_216)] text-white md:mt-20 md:max-h-[calc(100dvh-6rem)]">
-          <div className="flex items-start justify-between gap-3 border-b border-white/15 px-5 py-4">
+        <Card className="relative max-h-[82dvh] overflow-hidden rounded-3xl border border-app-line/15 bg-white md:mt-20 md:max-h-[calc(100dvh-6rem)]">
+          <div className="flex items-start justify-between gap-3 border-b border-app-line/10 px-5 py-4">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <div className="font-display text-[18px] tracking-wide">
                   {poi!.name}
                 </div>
-                <Pill className="border-white/20 bg-white/15 text-white/90">
+                <Pill className="bg-app-ink/5">
                   {categoryName[poi!.category]}
                 </Pill>
                 <RatingBadge value={rating} />
               </div>
-              <div className="mt-2 text-sm text-white/85">{poi!.summary}</div>
+              <div className="mt-2 text-sm text-app-ink/65">{poi!.summary}</div>
             </div>
             <button
               type="button"
               onClick={props.onClose}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/15 text-white transition hover:bg-white/20"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-app-ink/6 text-app-ink transition hover:bg-app-ink/10"
             >
               <X className="h-5 w-5" />
             </button>
@@ -87,7 +87,7 @@ export default function PoiSheet(props: {
 
           <div className="max-h-[calc(82dvh-70px)] overflow-y-auto px-5 pb-5 pt-4 md:max-h-[calc(100dvh-6rem-70px)]">
             {poi!.photos?.length ? (
-              <div className="mb-4 overflow-hidden rounded-2xl border border-white/15 bg-white/10">
+              <div className="mb-4 overflow-hidden rounded-2xl border border-app-line/12 bg-app-ink/3">
                 <img
                   src={poi!.photos[0]}
                   alt={poi!.name}
@@ -99,9 +99,7 @@ export default function PoiSheet(props: {
 
             <div className="flex flex-wrap items-center gap-2">
               {poi!.tags.map((t) => (
-                <Pill key={t} className="border-white/20 bg-white/12 text-white/90">
-                  {t}
-                </Pill>
+                <Pill key={t}>{t}</Pill>
               ))}
               <div className="ml-auto flex items-center gap-2">
                 <Button
@@ -133,14 +131,14 @@ export default function PoiSheet(props: {
 
               <div className="mt-3 space-y-3">
                 {list.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-white/25 bg-white/10 px-4 py-5 text-sm text-white/85">
+                  <div className="rounded-2xl border border-dashed border-app-line/20 bg-app-ink/3 px-4 py-5 text-sm text-app-ink/65">
                     暂无评价，写一条就能生成评分并同步到食堂榜单。
                   </div>
                 ) : (
                   list.slice(0, 6).map((r) => (
                     <div
                       key={r.id}
-                      className="rounded-2xl border border-white/15 bg-white px-4 py-4 text-app-ink"
+                      className="rounded-2xl border border-app-line/12 bg-white px-4 py-4"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="text-sm font-medium">{r.nickname}</div>
@@ -167,9 +165,9 @@ export default function PoiSheet(props: {
               </div>
 
               {writing ? (
-                <div className="mt-4 rounded-2xl border border-white/20 bg-white/10 p-4">
+                <div className="mt-4 rounded-2xl border border-app-line/15 bg-app-ink/3 p-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <div className="text-sm font-medium text-white">评分</div>
+                    <div className="text-sm font-medium">评分</div>
                     <div className="flex items-center gap-1">
                       {[1, 2, 3, 4, 5].map((n) => (
                         <button
@@ -179,8 +177,8 @@ export default function PoiSheet(props: {
                           className={cn(
                             'grid h-9 w-9 place-items-center rounded-xl text-sm font-semibold transition',
                             score >= n
-                              ? 'bg-[rgb(255_255_255)] text-[rgb(29_78_216)]'
-                              : 'bg-white/15 text-white/90 hover:bg-white/20',
+                              ? 'bg-[rgb(var(--app-accent))] text-white'
+                              : 'bg-app-ink/6 text-app-ink/70 hover:bg-app-ink/10',
                           )}
                         >
                           {n}
@@ -202,7 +200,7 @@ export default function PoiSheet(props: {
                       className="min-h-24 w-full resize-none rounded-2xl border border-app-line/20 bg-white px-3 py-3 text-sm text-app-ink shadow-sm outline-none transition focus:border-[rgb(var(--app-accent)/0.55)] focus:ring-2 focus:ring-[rgb(var(--app-accent)/0.18)]"
                     />
                     <div className="flex items-center justify-between gap-3">
-                      <div className="text-xs text-white/75">发布后会更新该地点评分，并出现在口碑页。</div>
+                      <div className="text-xs text-app-ink/55">发布后会更新该地点评分，并出现在口碑页。</div>
                       <Button
                         variant="primary"
                         onClick={() => {
