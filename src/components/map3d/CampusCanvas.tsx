@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { Poi, PoiCategory } from '@/data/types'
+import ErrorBoundary from '@/components/ui/ErrorBoundary'
 
 type SelectPayload = {
   poiId: string
@@ -198,22 +199,63 @@ export default function CampusCanvas(props: {
   activePoiId?: string | null
   onSelect: (p: SelectPayload) => void
 }) {
+  const [webglOk, setWebglOk] = useState(true)
+
+  useEffect(() => {
+    try {
+      const c = document.createElement('canvas')
+      const ok = Boolean(c.getContext('webgl2') || c.getContext('webgl'))
+      setWebglOk(ok)
+    } catch {
+      setWebglOk(false)
+    }
+  }, [])
+
+  if (!webglOk) {
+    return (
+      <div className="relative grid h-[70dvh] place-items-center overflow-hidden rounded-3xl border border-app-line/15 bg-white/55 px-6 text-center shadow-[0_30px_80px_-60px_rgb(0_0_0/0.45)]">
+        <div className="max-w-md">
+          <div className="font-display text-[20px] tracking-wide">当前设备不支持 3D 渲染</div>
+          <div className="mt-3 text-sm leading-relaxed text-app-ink/65">
+            可能是浏览器禁用了 WebGL 或硬件加速。你仍然可以使用其它入口（新生清单/吃喝指南/口碑打卡）。
+          </div>
+          <div className="mt-4 text-xs text-app-ink/55">
+            建议：使用 Chrome/Edge 打开，并开启“硬件加速”后刷新页面。
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="relative h-[70dvh] overflow-hidden rounded-3xl border border-app-line/15 bg-white/50 shadow-[0_30px_80px_-60px_rgb(0_0_0/0.45)]">
-      <Canvas
-        camera={{ position: [16, 14, 18], fov: 45, near: 0.1, far: 200 }}
-        dpr={[1, 1.7]}
+      <ErrorBoundary
+        fallback={
+          <div className="grid h-full place-items-center px-6 text-center">
+            <div className="max-w-md">
+              <div className="font-display text-[20px] tracking-wide">3D 地图加载失败</div>
+              <div className="mt-3 text-sm leading-relaxed text-app-ink/65">
+                可能是浏览器 WebGL 环境异常。可以刷新重试，或先使用其它入口。
+              </div>
+            </div>
+          </div>
+        }
       >
-        <Suspense fallback={null}>
-          <Scene
-            pois={props.pois}
-            filter={props.filter}
-            focusPoiId={props.focusPoiId}
-            activePoiId={props.activePoiId}
-            onSelect={props.onSelect}
-          />
-        </Suspense>
-      </Canvas>
+        <Canvas
+          camera={{ position: [16, 14, 18], fov: 45, near: 0.1, far: 200 }}
+          dpr={[1, 1.7]}
+        >
+          <Suspense fallback={null}>
+            <Scene
+              pois={props.pois}
+              filter={props.filter}
+              focusPoiId={props.focusPoiId}
+              activePoiId={props.activePoiId}
+              onSelect={props.onSelect}
+            />
+          </Suspense>
+        </Canvas>
+      </ErrorBoundary>
     </div>
   )
 }
