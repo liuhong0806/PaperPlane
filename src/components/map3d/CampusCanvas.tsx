@@ -1,5 +1,5 @@
 import { CameraControls, Html, RoundedBox, Text, useCursor } from '@react-three/drei'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { Poi, PoiCategory } from '@/data/types'
@@ -113,6 +113,7 @@ function Scene(props: {
   onSelect: (p: SelectPayload) => void
   onPickPoint?: (p: { x: number; y: number; z: number }) => void
 }) {
+  const invalidate = useThree((s) => s.invalidate)
   const cam = useRef<CameraControls | null>(null)
   const [ready, setReady] = useState(false)
 
@@ -207,6 +208,9 @@ function Scene(props: {
         minDistance={12}
         dollySpeed={0.4}
         smoothTime={0.25}
+        onStart={() => invalidate()}
+        onChange={() => invalidate()}
+        onEnd={() => invalidate()}
       />
     </>
   )
@@ -266,7 +270,9 @@ export default function CampusCanvas(props: {
       >
         <Canvas
           camera={{ position: [16, 14, 18], fov: 45, near: 0.1, far: 200 }}
-          dpr={[1, 1.7]}
+          dpr={[1, 2]}
+          frameloop="demand"
+          gl={{ antialias: true, powerPreference: 'high-performance' }}
         >
           <Suspense fallback={null}>
             <Scene
