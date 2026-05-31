@@ -241,11 +241,29 @@ function Scene(props: {
         }}
         maxDistance={62}
         minDistance={12}
+        minPolarAngle={0.25}
+        maxPolarAngle={Math.PI / 2 - 0.06}
         dollySpeed={0.4}
         smoothTime={0.25}
         onStart={() => invalidate()}
-        onChange={() => invalidate()}
-        onEnd={() => invalidate()}
+        onChange={() => {
+          const c = cam.current
+          if (c) {
+            const v = new THREE.Vector3()
+            c.getPosition(v)
+            if (v.y < 1) c.setPosition(v.x, 1, v.z, false)
+          }
+          invalidate()
+        }}
+        onEnd={() => {
+          const c = cam.current
+          if (c) {
+            const v = new THREE.Vector3()
+            c.getPosition(v)
+            if (v.y < 1) c.setPosition(v.x, 1, v.z, true)
+          }
+          invalidate()
+        }}
       />
     </>
   )

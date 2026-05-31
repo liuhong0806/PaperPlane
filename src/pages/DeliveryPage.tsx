@@ -1,6 +1,6 @@
 import { Bike, MapPinned, Navigation, User, UserCheck, LocateFixed } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import CampusCanvas from '@/components/map3d/CampusCanvas'
+import CampusMiniMap from '@/components/map2d/CampusMiniMap'
 import Button from '@/components/ui/Button'
 import Card from '@/components/ui/Card'
 import Input from '@/components/ui/Input'
@@ -18,6 +18,8 @@ const typeLabel: Record<DeliveryOrderType, string> = {
   campus_food: '校内食物/奶茶',
   gate_pickup: '校门口外卖代取',
 }
+
+const CAMPUS_CENTER = { lat: 28.65327, lon: 115.8292 }
 
 export default function DeliveryPage() {
   const pois = useCampusStore((s) => s.pois)
@@ -46,15 +48,15 @@ export default function DeliveryPage() {
 
   const gates = useMemo(() => pois.filter((p) => p.id.startsWith('p_gate_')), [pois])
   const canteens = useMemo(() => pois.filter((p) => p.category === 'canteen'), [pois])
-  const nonGates = useMemo(() => pois.filter((p) => !p.id.startsWith('p_gate_')), [pois])
+  const dropoffs = useMemo(() => pois.filter((p) => !p.id.startsWith('p_gate_') && p.category !== 'canteen'), [pois])
 
   useEffect(() => {
     const nextPickup = orderType === 'gate_pickup'
       ? gates[0]?.id ?? ''
-      : canteens[0]?.id ?? nonGates[0]?.id ?? ''
+      : canteens[0]?.id ?? ''
     if (!pickupPoiId) setPickupPoiId(nextPickup)
-    if (!dropoffPoiId) setDropoffPoiId(nonGates[0]?.id ?? '')
-  }, [canteens, dropoffPoiId, gates, nonGates, orderType, pickupPoiId])
+    if (!dropoffPoiId) setDropoffPoiId(dropoffs[0]?.id ?? '')
+  }, [canteens, dropoffPoiId, dropoffs, gates, orderType, pickupPoiId])
 
   const focusPoiId = useMemo(() => {
     if (selectedPoiId) return selectedPoiId
@@ -135,15 +137,14 @@ export default function DeliveryPage() {
         </Card>
       </div>
 
-      <CampusCanvas
+      <CampusMiniMap
         pois={pois}
-        filter="all"
-        buildings={buildings}
         poiOverrides={poiOverrides}
         focusPoiId={focusPoiId}
         activePoiId={selectedPoiId}
         markers={markers}
-        onSelect={(p) => setSelectedPoiId(p.poiId)}
+        onSelect={(id) => setSelectedPoiId(id)}
+        className="h-auto"
       />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -151,7 +152,7 @@ export default function DeliveryPage() {
           <UserPanel
             pois={pois}
             gates={gates}
-            nonGates={nonGates}
+            dropoffs={dropoffs}
             orderType={orderType}
             setOrderType={setOrderType}
             pickupPoiId={pickupPoiId}
@@ -176,7 +177,7 @@ export default function DeliveryPage() {
             active={active}
             acceptOrder={acceptOrder}
             setOrderStatus={setOrderStatus}
-            buildingsCenter={buildings?.center ?? null}
+            buildingsCenter={buildings?.center ?? CAMPUS_CENTER}
             setRiderPos={setRiderPos}
             clearRiderPos={clearRiderPos}
           />
@@ -206,7 +207,7 @@ export default function DeliveryPage() {
 function UserPanel(props: {
   pois: Poi[]
   gates: Poi[]
-  nonGates: Poi[]
+  dropoffs: Poi[]
   orderType: DeliveryOrderType
   setOrderType: (t: DeliveryOrderType) => void
   pickupPoiId: string
@@ -222,7 +223,7 @@ function UserPanel(props: {
   setOrderStatus: (id: string, status: DeliveryOrder['status']) => void
 }) {
   const pickupOptions = props.orderType === 'gate_pickup' ? props.gates : props.pois.filter((p) => p.category === 'canteen')
-  const dropoffOptions = props.nonGates
+  const dropoffOptions = props.dropoffs
 
   const canSubmit = Boolean(props.pickupPoiId && props.dropoffPoiId && props.pickupPoiId !== props.dropoffPoiId)
 
@@ -339,7 +340,7 @@ function RiderPanel(props: {
   active: DeliveryOrder | null
   acceptOrder: (id: string) => void
   setOrderStatus: (id: string, status: DeliveryOrder['status']) => void
-  buildingsCenter: { lat: number; lon: number } | null
+  buildingsCenter: { lat: number; lon: number }
   setRiderPos: (pos: { x: number; y: number; z: number }) => void
   clearRiderPos: () => void
 }) {
@@ -370,7 +371,6 @@ function RiderPanel(props: {
     if (watchId.current != null) navigator.geolocation.clearWatch(watchId.current)
     watchId.current = navigator.geolocation.watchPosition(
       (pos) => {
-        if (!props.buildingsCenter) return
         const m = projectMeters(props.buildingsCenter, pos.coords.latitude, pos.coords.longitude)
         props.setRiderPos({ x: m.x, y: 0, z: m.z })
       },
