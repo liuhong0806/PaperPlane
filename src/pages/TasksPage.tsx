@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button'
 import Pill from '@/components/ui/Pill'
 import { useCampusStore, usePoiById } from '@/store/useCampusStore'
 import { cn } from '@/utils/cn'
+import { X } from 'lucide-react'
 
 export default function TasksPage() {
   const navigate = useNavigate()
@@ -118,7 +119,7 @@ function TaskSheet(props: {
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={props.onClose} />
       <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-6xl px-4 pb-4 md:inset-y-0 md:right-0 md:left-auto md:w-[520px] md:px-0 md:pb-0">
-        <Card className="max-h-[82dvh] overflow-hidden rounded-3xl border-app-line/20 bg-app/88 md:mt-20 md:max-h-[calc(100dvh-6rem)]">
+        <Card className="max-h-[82dvh] overflow-hidden rounded-3xl border-app-line/15 bg-white md:mt-20 md:max-h-[calc(100dvh-6rem)]">
           <div className="flex items-start justify-between gap-3 border-b border-app-line/10 px-5 py-4">
             <div className="min-w-0">
               <div className="font-display text-[18px] tracking-wide">{task.title}</div>
@@ -126,13 +127,17 @@ function TaskSheet(props: {
                 {poi ? `关联地点：${poi.name}` : '关联地点：—'}
               </div>
             </div>
-            <Button size="sm" variant="ghost" onClick={props.onClose}>
-              关闭
-            </Button>
+            <button
+              type="button"
+              onClick={props.onClose}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-app-ink/6 text-app-ink transition hover:bg-app-ink/10"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
 
           <div className="max-h-[calc(82dvh-70px)] overflow-y-auto px-5 pb-5 pt-4 md:max-h-[calc(100dvh-6rem-70px)]">
-            <div className="rounded-2xl border border-app-line/12 bg-white/55 p-4">
+            <div className="rounded-2xl border border-app-line/12 bg-app-ink/3 p-4">
               <div className="text-sm text-app-ink/75">{task.description}</div>
               {task.tip ? (
                 <div className="mt-3 rounded-2xl bg-app-ink/6 px-3 py-2 text-xs text-app-ink/65">
@@ -171,4 +176,3 @@ function TaskSheet(props: {
     </div>
   )
 }
-
