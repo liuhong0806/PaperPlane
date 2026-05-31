@@ -86,6 +86,17 @@ export default function PoiSheet(props: {
           </div>
 
           <div className="max-h-[calc(82dvh-70px)] overflow-y-auto px-5 pb-5 pt-4 md:max-h-[calc(100dvh-6rem-70px)]">
+            {poi!.photos?.length ? (
+              <div className="mb-4 overflow-hidden rounded-2xl border border-app-line/12 bg-app-ink/3">
+                <img
+                  src={poi!.photos[0]}
+                  alt={poi!.name}
+                  className="h-44 w-full object-cover md:h-52"
+                  loading="lazy"
+                />
+              </div>
+            ) : null}
+
             <div className="flex flex-wrap items-center gap-2">
               {poi!.tags.map((t) => (
                 <Pill key={t}>{t}</Pill>

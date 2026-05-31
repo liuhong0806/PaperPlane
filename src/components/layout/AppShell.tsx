@@ -1,4 +1,4 @@
-import { Compass, Map as MapIcon, NotebookText, Salad, Sparkles, Bike } from 'lucide-react'
+import { Compass, Map as MapIcon, NotebookText, Salad, Sparkles } from 'lucide-react'
 import { clsx } from 'clsx'
 import { motion } from 'framer-motion'
 import { ReactNode, useMemo } from 'react'
@@ -22,7 +22,6 @@ export default function AppShell(props: {
       { key: 'tasks', label: '新生清单', path: '/tasks', icon: <NotebookText className="h-4 w-4" /> },
       { key: 'food', label: '吃喝指南', path: '/food', icon: <Salad className="h-4 w-4" /> },
       { key: 'feed', label: '口碑打卡', path: '/feed', icon: <Sparkles className="h-4 w-4" /> },
-      { key: 'delivery', label: '校园配送', path: '/delivery', icon: <Bike className="h-4 w-4" /> },
     ],
     [],
   )
@@ -81,7 +80,7 @@ export default function AppShell(props: {
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-app-line/70 bg-app/80 backdrop-blur md:hidden">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-6 px-2 py-2">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-5 px-2 py-2">
           {nav.map((item) => {
             const active = props.currentPath === item.path
             return (

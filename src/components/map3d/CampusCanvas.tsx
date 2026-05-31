@@ -111,6 +111,19 @@ function PoiMesh(props: {
   )
 }
 
+function PoiPhoto(props: { poi: Poi }) {
+  const src = props.poi.photos?.[0]
+  if (!src) return null
+  return (
+    <Html center distanceFactor={18} position={[props.poi.position.x, props.poi.size.y + 3.4, props.poi.position.z]} transform>
+      <div style={{ pointerEvents: 'none' }} className="w-[210px] overflow-hidden rounded-2xl border border-app-line/20 bg-white shadow-lg">
+        <img src={src} alt={props.poi.name} className="h-[120px] w-full object-cover" loading="lazy" />
+        <div className="px-3 py-2 text-[12px] font-medium text-app-ink">{props.poi.name}</div>
+      </div>
+    </Html>
+  )
+}
+
 function MarkerMesh(props: { marker: Marker }) {
   const c = useMemo(() => new THREE.Color(props.marker.color), [props.marker.color])
   const r = props.marker.radius ?? 0.22
@@ -143,6 +156,14 @@ function Scene(props: {
   const invalidate = useThree((s) => s.invalidate)
   const cam = useRef<CameraControls | null>(null)
   const [ready, setReady] = useState(false)
+
+  const activePoi = useMemo(() => {
+    if (!props.activePoiId) return null
+    const p = props.pois.find((x) => x.id === props.activePoiId)
+    if (!p) return null
+    const override = props.poiOverrides?.[p.id]
+    return override ? { ...p, position: override } : p
+  }, [props.activePoiId, props.poiOverrides, props.pois])
 
   const filtered = useMemo(() => {
     if (props.filter === 'all') return props.pois
@@ -222,6 +243,8 @@ function Scene(props: {
           )
         })}
       </group>
+
+      {activePoi ? <PoiPhoto poi={activePoi} /> : null}
 
       <Text
         position={[0, 0.02, -18]}

@@ -260,7 +260,7 @@ export const mockTasks: Task[] = [
     id: 't_1',
     group: '报到与账号',
     title: '熟悉校园入口与取餐点',
-    description: '确认正门/四个取餐点位置，外卖代取与校园配送更顺畅。',
+    description: '确认正门与四个取餐点位置，外卖交接更顺畅。',
     materials: ['身份证/学生证', '录取通知书（如需）'],
     poiId: 'p_main_gate',
     tip: '建议先在 3D 地图里点开“北门外卖取餐点”，熟悉交接动线。',
