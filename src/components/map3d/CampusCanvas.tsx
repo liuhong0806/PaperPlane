@@ -10,6 +10,14 @@ type SelectPayload = {
   poiId: string
 }
 
+type Marker = {
+  id: string
+  name: string
+  position: { x: number; y: number; z: number }
+  color: string
+  radius?: number
+}
+
 const categoryColor: Record<PoiCategory, string> = {
   canteen: '#EC772E',
   scenery: '#175C4A',
@@ -103,10 +111,29 @@ function PoiMesh(props: {
   )
 }
 
+function MarkerMesh(props: { marker: Marker }) {
+  const c = useMemo(() => new THREE.Color(props.marker.color), [props.marker.color])
+  const r = props.marker.radius ?? 0.22
+  return (
+    <group position={[props.marker.position.x, props.marker.position.y, props.marker.position.z]}>
+      <mesh position={[0, r, 0]}>
+        <sphereGeometry args={[r, 18, 18]} />
+        <meshStandardMaterial color={c} emissive={c} emissiveIntensity={0.18} roughness={0.55} />
+      </mesh>
+      <Html center distanceFactor={18} position={[0, r + 0.9, 0]} transform>
+        <div className="rounded-full border border-app-line/20 bg-app/85 px-2.5 py-1 text-[11px] text-app-ink/80 shadow-sm backdrop-blur">
+          {props.marker.name}
+        </div>
+      </Html>
+    </group>
+  )
+}
+
 function Scene(props: {
   pois: Poi[]
   buildings?: import('@/data/types').CampusBuildingsPayload | null
   poiOverrides?: Record<string, { x: number; y: number; z: number }>
+  markers?: Marker[]
   focusPoiId?: string | null
   activePoiId?: string | null
   filter: PoiCategory | 'all'
@@ -169,6 +196,14 @@ function Scene(props: {
         <BuildingsLayer buildings={props.buildings} />
       ) : null}
 
+      {props.markers?.length ? (
+        <group>
+          {props.markers.map((m) => (
+            <MarkerMesh key={m.id} marker={m} />
+          ))}
+        </group>
+      ) : null}
+
       <group>
         {props.pois.map((poi) => {
           const dimmed = props.filter !== 'all' && poi.category !== props.filter
@@ -221,6 +256,7 @@ export default function CampusCanvas(props: {
   filter: PoiCategory | 'all'
   buildings?: import('@/data/types').CampusBuildingsPayload | null
   poiOverrides?: Record<string, { x: number; y: number; z: number }>
+  markers?: Marker[]
   focusPoiId?: string | null
   activePoiId?: string | null
   onSelect: (p: SelectPayload) => void
@@ -279,6 +315,7 @@ export default function CampusCanvas(props: {
               pois={props.pois}
               buildings={props.buildings}
               poiOverrides={props.poiOverrides}
+              markers={props.markers}
               filter={props.filter}
               focusPoiId={props.focusPoiId}
               activePoiId={props.activePoiId}

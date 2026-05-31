@@ -100,6 +100,42 @@ export const mockPois: Poi[] = [
     position: { x: 0, y: 0, z: 0 },
     size: { x: 6.8, y: 3.8, z: 5.4 },
   },
+  {
+    id: 'p_gate_east',
+    name: '东门外卖取餐点',
+    category: 'service',
+    summary: '校门口集中取餐点，适合外卖代取与交接。',
+    tags: ['校门口', '外卖代取', '交接点'],
+    position: { x: 22, y: 0, z: 0 },
+    size: { x: 2.4, y: 1.2, z: 2.4 },
+  },
+  {
+    id: 'p_gate_north',
+    name: '北门外卖取餐点',
+    category: 'service',
+    summary: '校门口集中取餐点，适合外卖代取与交接。',
+    tags: ['校门口', '外卖代取', '交接点'],
+    position: { x: 0, y: 0, z: -22 },
+    size: { x: 2.4, y: 1.2, z: 2.4 },
+  },
+  {
+    id: 'p_gate_south',
+    name: '南门外卖取餐点',
+    category: 'service',
+    summary: '校门口集中取餐点，适合外卖代取与交接。',
+    tags: ['校门口', '外卖代取', '交接点'],
+    position: { x: 0, y: 0, z: 22 },
+    size: { x: 2.4, y: 1.2, z: 2.4 },
+  },
+  {
+    id: 'p_gate_west',
+    name: '西门外卖取餐点',
+    category: 'service',
+    summary: '校门口集中取餐点，适合外卖代取与交接。',
+    tags: ['校门口', '外卖代取', '交接点'],
+    position: { x: -22, y: 0, z: 0 },
+    size: { x: 2.4, y: 1.2, z: 2.4 },
+  },
 ]
 
 export const mockTasks: Task[] = [

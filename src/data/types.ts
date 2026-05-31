@@ -49,3 +49,31 @@ export type Task = {
   poiId: string
   tip?: string
 }
+
+export type DeliveryOrderType = 'campus_food' | 'gate_pickup'
+
+export type DeliveryOrderStatus = 'open' | 'accepted' | 'delivering' | 'done' | 'cancelled'
+
+export type RiderProfile = {
+  name: string
+  phone: string
+}
+
+export type RiderPosition = {
+  x: number
+  y: number
+  z: number
+  updatedAt: string
+}
+
+export type DeliveryOrder = {
+  id: string
+  type: DeliveryOrderType
+  pickupPoiId: string
+  dropoffPoiId: string
+  note: string
+  fee: number
+  status: DeliveryOrderStatus
+  createdAt: string
+  rider?: RiderProfile | null
+}

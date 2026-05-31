@@ -7,6 +7,7 @@ import TasksPage from '@/pages/TasksPage'
 import FoodPage from '@/pages/FoodPage'
 import FeedPage from '@/pages/FeedPage'
 import PoiPage from '@/pages/PoiPage'
+import DeliveryPage from '@/pages/DeliveryPage'
 
 export default function App() {
   const location = useLocation()
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/food" element={<FoodPage />} />
           <Route path="/feed" element={<FeedPage />} />
+          <Route path="/delivery" element={<DeliveryPage />} />
           <Route path="/poi/:id" element={<PoiPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -31,4 +33,3 @@ export default function App() {
     </AppShell>
   )
 }
-
