@@ -76,7 +76,7 @@ export default function MapPage() {
                 setBuildingsError(null)
                 setLoadingBuildings(true)
                 try {
-                  const center = { lat: 28.6552576, lon: 115.8296809 }
+                  const center = { lat: 28.65327, lon: 115.8292 }
                   const endpoints = [
                     'https://overpass-api.de/api/interpreter',
                     'https://overpass.kumi.systems/api/interpreter',
@@ -87,7 +87,7 @@ export default function MapPage() {
                     try {
                       const payload = await fetchCampusBuildingsFromOverpass({
                         center,
-                        radiusMeters: 2000,
+                        radiusMeters: 1800,
                         endpoint: ep,
                       })
                       setBuildings(payload)
