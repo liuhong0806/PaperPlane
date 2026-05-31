@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-bg: 252 250 244;
+  --app-ink: 17 28 23;
+  --app-line: 33 52 43;
+  --app-accent: 236 119 46;
+  --app-accent-2: 23 92 74;
+}
+
+html {
+  font-family: theme(fontFamily.sans);
+}
+
+body {
+  background: rgb(var(--app-bg));
+  color: rgb(var(--app-ink));
+}
+
+::selection {
+  background: rgb(var(--app-accent) / 0.25);
+}
+
+@layer base {
+  .font-display {
+    font-family: "Noto Serif SC", ui-serif, Georgia, serif;
+  }
+}
+
