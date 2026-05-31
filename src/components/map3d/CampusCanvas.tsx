@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import type { Poi, PoiCategory } from '@/data/types'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
 import BuildingsLayer from '@/components/map3d/BuildingsLayer'
+import CampusFallback from '@/components/map2d/CampusFallback'
 
 type SelectPayload = {
   poiId: string
@@ -319,17 +320,12 @@ export default function CampusCanvas(props: {
 
   if (!webglOk) {
     return (
-      <div className="relative grid h-[70dvh] place-items-center overflow-hidden rounded-3xl border border-app-line/15 bg-white/55 px-6 text-center shadow-[0_30px_80px_-60px_rgb(0_0_0/0.45)]">
-        <div className="max-w-md">
-          <div className="font-display text-[20px] tracking-wide">当前设备不支持 3D 渲染</div>
-          <div className="mt-3 text-sm leading-relaxed text-app-ink/65">
-            可能是浏览器禁用了 WebGL 或硬件加速。你仍然可以使用其它入口（新生清单/吃喝指南/口碑打卡）。
-          </div>
-          <div className="mt-4 text-xs text-app-ink/55">
-            建议：使用 Chrome/Edge 打开，并开启“硬件加速”后刷新页面。
-          </div>
-        </div>
-      </div>
+      <CampusFallback
+        pois={props.pois}
+        poiOverrides={props.poiOverrides}
+        activePoiId={props.activePoiId}
+        onSelect={props.onSelect}
+      />
     )
   }
 
