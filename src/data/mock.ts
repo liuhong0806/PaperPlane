@@ -51,6 +51,7 @@ export const mockPois: Poi[] = [
     name: '图书馆',
     category: 'study',
     summary: '前湖校区总馆，标志性建筑之一，自习与借阅高频区。',
+    photos: ['https://so1.360tres.com/t01bc9ca033628ffbf8.jpg'],
     tags: ['自习', '借阅', '标志性建筑'],
     position: { x: 1, y: 0, z: -1 },
     size: { x: 10.5, y: 4.2, z: 7.2 },
