@@ -78,7 +78,7 @@ function PoiMesh(props: {
       <RoundedBox
         args={[props.poi.size.x, props.poi.size.y, props.poi.size.z]}
         radius={0.25}
-        smoothness={5}
+        smoothness={3}
         position={[0, props.poi.size.y / 2, 0]}
       >
         <meshStandardMaterial
@@ -91,22 +91,24 @@ function PoiMesh(props: {
       </RoundedBox>
 
       <mesh position={[0, props.poi.size.y + 0.55, 0]}>
-        <sphereGeometry args={[0.12, 16, 16]} />
+        <sphereGeometry args={[0.12, 10, 10]} />
         <meshStandardMaterial color="#111c17" emissive="#111c17" emissiveIntensity={hovered ? 0.35 : 0.2} />
       </mesh>
 
-      <Html center distanceFactor={18} position={[0, props.poi.size.y + 1.0, 0]} transform>
-        <div
-          style={{
-            pointerEvents: 'none',
-            transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-            transition: 'transform 220ms ease',
-          }}
-          className="rounded-full border border-app-line/20 bg-app/85 px-2.5 py-1 text-[11px] text-app-ink/80 shadow-sm backdrop-blur"
-        >
-          {props.poi.name}
-        </div>
-      </Html>
+      {hovered || props.active ? (
+        <Html center distanceFactor={18} position={[0, props.poi.size.y + 1.0, 0]} transform>
+          <div
+            style={{
+              pointerEvents: 'none',
+              transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+              transition: 'transform 220ms ease',
+            }}
+            className="rounded-full border border-app-line/20 bg-app/85 px-2.5 py-1 text-[11px] text-app-ink/80 shadow-sm backdrop-blur"
+          >
+            {props.poi.name}
+          </div>
+        </Html>
+      ) : null}
     </group>
   )
 }
@@ -347,7 +349,7 @@ export default function CampusCanvas(props: {
       >
         <Canvas
           camera={{ position: [16, 14, 18], fov: 45, near: 0.1, far: 200 }}
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           frameloop="demand"
           gl={{ antialias: true, powerPreference: 'high-performance' }}
         >

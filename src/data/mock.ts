@@ -1,6 +1,6 @@
 import type { Poi, Review, Task } from '@/data/types'
 
-export const mockPois: Poi[] = [
+const basePois: Poi[] = [
   {
     id: 'p_canteen_1',
     name: '学生一食堂',
@@ -258,6 +258,17 @@ export const mockPois: Poi[] = [
     size: { x: 12, y: 4, z: 9 },
   },
 ]
+
+const SPREAD = 1.7
+
+export const mockPois: Poi[] = basePois.map((p) => ({
+  ...p,
+  position: {
+    ...p.position,
+    x: p.position.x * SPREAD,
+    z: p.position.z * SPREAD,
+  },
+}))
 
 export const mockTasks: Task[] = [
   {

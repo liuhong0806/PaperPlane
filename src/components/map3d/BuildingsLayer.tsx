@@ -4,8 +4,8 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import type { CampusBuildingsPayload } from '@/data/types'
 
 function simplifyRing(ring: Array<[number, number]>) {
-  if (ring.length <= 70) return ring
-  const stride = Math.ceil(ring.length / 70)
+  if (ring.length <= 40) return ring
+  const stride = Math.ceil(ring.length / 40)
   const out: Array<[number, number]> = []
   for (let i = 0; i < ring.length; i += stride) out.push(ring[i])
   const last = ring[ring.length - 1]
@@ -26,7 +26,7 @@ function toShape(ring: Array<[number, number]>) {
 export default function BuildingsLayer(props: { buildings: CampusBuildingsPayload }) {
   const merged = useMemo(() => {
     const geos: THREE.BufferGeometry[] = []
-    const maxBuildings = 700
+    const maxBuildings = 240
 
     for (const b of props.buildings.buildings.slice(0, maxBuildings)) {
       if (!b.rings?.length) continue
