@@ -16,6 +16,7 @@ const categoryName: Record<PoiCategory, string> = {
   service: '办事点',
   study: '自习点',
   building: '建筑',
+  sports: '运动场地',
 }
 
 function scoreHint(score: number) {
@@ -224,4 +225,3 @@ export default function PoiSheet(props: {
     </div>
   )
 }
-

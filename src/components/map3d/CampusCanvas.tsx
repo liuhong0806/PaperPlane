@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import type { Poi, PoiCategory } from '@/data/types'
 import ErrorBoundary from '@/components/ui/ErrorBoundary'
+import BuildingsLayer from '@/components/map3d/BuildingsLayer'
 
 type SelectPayload = {
   poiId: string
@@ -16,17 +17,18 @@ const categoryColor: Record<PoiCategory, string> = {
   service: '#2A5E52',
   study: '#0E2E25',
   building: '#1A2A22',
+  sports: '#0B3B2F',
 }
 
 function Ground() {
   return (
     <group>
       <mesh rotation-x={-Math.PI / 2} position={[0, -0.01, 0]}>
-        <planeGeometry args={[60, 60]} />
+        <planeGeometry args={[220, 220]} />
         <meshStandardMaterial color="#f6f1e6" />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position={[0, 0, 0]}>
-        <planeGeometry args={[60, 60]} />
+        <planeGeometry args={[220, 220]} />
         <meshStandardMaterial
           color="#fff"
           opacity={0.12}
@@ -103,10 +105,13 @@ function PoiMesh(props: {
 
 function Scene(props: {
   pois: Poi[]
+  buildings?: import('@/data/types').CampusBuildingsPayload | null
+  poiOverrides?: Record<string, { x: number; y: number; z: number }>
   focusPoiId?: string | null
   activePoiId?: string | null
   filter: PoiCategory | 'all'
   onSelect: (p: SelectPayload) => void
+  onPickPoint?: (p: { x: number; y: number; z: number }) => void
 }) {
   const cam = useRef<CameraControls | null>(null)
   const [ready, setReady] = useState(false)
@@ -148,17 +153,32 @@ function Scene(props: {
       <directionalLight position={[12, 18, 8]} intensity={1.15} />
       <directionalLight position={[-10, 12, -6]} intensity={0.55} />
 
-      <Ground />
+      <group
+        onPointerDown={(e) => {
+          if (!props.onPickPoint) return
+          if (!('point' in e)) return
+          const p = e.point as THREE.Vector3
+          props.onPickPoint({ x: p.x, y: p.y, z: p.z })
+        }}
+      >
+        <Ground />
+      </group>
+
+      {props.buildings?.buildings?.length ? (
+        <BuildingsLayer buildings={props.buildings} />
+      ) : null}
 
       <group>
         {props.pois.map((poi) => {
           const dimmed = props.filter !== 'all' && poi.category !== props.filter
           const visible = props.filter === 'all' || poi.category === props.filter
           if (!visible) return null
+          const override = props.poiOverrides?.[poi.id]
+          const nextPoi = override ? { ...poi, position: override } : poi
           return (
             <PoiMesh
               key={poi.id}
-              poi={poi}
+              poi={nextPoi}
               dimmed={dimmed}
               active={poi.id === props.activePoiId}
               onSelect={props.onSelect}
@@ -195,9 +215,12 @@ function Scene(props: {
 export default function CampusCanvas(props: {
   pois: Poi[]
   filter: PoiCategory | 'all'
+  buildings?: import('@/data/types').CampusBuildingsPayload | null
+  poiOverrides?: Record<string, { x: number; y: number; z: number }>
   focusPoiId?: string | null
   activePoiId?: string | null
   onSelect: (p: SelectPayload) => void
+  onPickPoint?: (p: { x: number; y: number; z: number }) => void
 }) {
   const [webglOk, setWebglOk] = useState(true)
 
@@ -248,10 +271,13 @@ export default function CampusCanvas(props: {
           <Suspense fallback={null}>
             <Scene
               pois={props.pois}
+              buildings={props.buildings}
+              poiOverrides={props.poiOverrides}
               filter={props.filter}
               focusPoiId={props.focusPoiId}
               activePoiId={props.activePoiId}
               onSelect={props.onSelect}
+              onPickPoint={props.onPickPoint}
             />
           </Suspense>
         </Canvas>

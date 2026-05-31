@@ -5,6 +5,7 @@ export type PoiCategory =
   | 'service'
   | 'study'
   | 'building'
+  | 'sports'
 
 export type Poi = {
   id: string
@@ -15,6 +16,18 @@ export type Poi = {
   tags: string[]
   position: { x: number; y: number; z: number }
   size: { x: number; y: number; z: number }
+}
+
+export type CampusBuilding = {
+  id: string
+  name?: string
+  height: number
+  rings: Array<Array<[number, number]>>
+}
+
+export type CampusBuildingsPayload = {
+  center: { lat: number; lon: number }
+  buildings: CampusBuilding[]
 }
 
 export type Review = {

@@ -13,6 +13,7 @@ const categoryLabel: Record<Poi['category'], string> = {
   service: '办事',
   study: '自习',
   building: '建筑',
+  sports: '运动',
 }
 
 export default function PoiCard(props: {
@@ -67,4 +68,3 @@ export default function PoiCard(props: {
     </Card>
   )
 }
-

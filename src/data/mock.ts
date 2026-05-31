@@ -20,6 +20,15 @@ export const mockPois: Poi[] = [
     size: { x: 5, y: 2.2, z: 3.5 },
   },
   {
+    id: 'p_canteen_3',
+    name: '三食堂',
+    category: 'canteen',
+    summary: '口味更偏清淡，晚自习前来一顿很稳。',
+    tags: ['清淡', '窗口多'],
+    position: { x: 8, y: 0, z: -8 },
+    size: { x: 5.4, y: 2.4, z: 3.8 },
+  },
+  {
     id: 'p_service_1',
     name: '校园卡与网络服务中心',
     category: 'service',
@@ -54,6 +63,33 @@ export const mockPois: Poi[] = [
     tags: ['晚霞', '出片', '风大'],
     position: { x: -10, y: 0, z: -1 },
     size: { x: 3, y: 0.6, z: 3 },
+  },
+  {
+    id: 'p_museum_1',
+    name: '科技馆',
+    category: 'building',
+    summary: '适合参观与科普活动，新生打卡点之一。',
+    tags: ['新生友好', '科普'],
+    position: { x: -12, y: 0, z: 7 },
+    size: { x: 4.6, y: 2.8, z: 3.4 },
+  },
+  {
+    id: 'p_stadium_1',
+    name: '体育场',
+    category: 'sports',
+    summary: '夜跑友好，傍晚人气最高。',
+    tags: ['夜跑', '操场'],
+    position: { x: 14, y: 0, z: -6 },
+    size: { x: 10, y: 1.2, z: 6 },
+  },
+  {
+    id: 'p_basketball_1',
+    name: '篮球场',
+    category: 'sports',
+    summary: '晚间人多，周末更热闹。',
+    tags: ['对抗', '热闹'],
+    position: { x: 12, y: 0, z: -12 },
+    size: { x: 6, y: 0.6, z: 4 },
   },
   {
     id: 'p_building_1',
@@ -134,4 +170,3 @@ export const mockReviews: Review[] = [
     createdAt: '2026-05-30 17:42',
   },
 ]
-
