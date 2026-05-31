@@ -306,41 +306,16 @@ export default function CampusCanvas(props: {
   onSelect: (p: SelectPayload) => void
   onPickPoint?: (p: { x: number; y: number; z: number }) => void
 }) {
-  const [webglOk, setWebglOk] = useState(true)
-
-  useEffect(() => {
-    try {
-      const c = document.createElement('canvas')
-      const ok = Boolean(c.getContext('webgl2') || c.getContext('webgl'))
-      setWebglOk(ok)
-    } catch {
-      setWebglOk(false)
-    }
-  }, [])
-
-  if (!webglOk) {
-    return (
-      <CampusFallback
-        pois={props.pois}
-        poiOverrides={props.poiOverrides}
-        activePoiId={props.activePoiId}
-        onSelect={props.onSelect}
-      />
-    )
-  }
-
   return (
     <div className="relative h-[70dvh] overflow-hidden rounded-3xl border border-app-line/15 bg-white/50 shadow-[0_30px_80px_-60px_rgb(0_0_0/0.45)]">
       <ErrorBoundary
         fallback={
-          <div className="grid h-full place-items-center px-6 text-center">
-            <div className="max-w-md">
-              <div className="font-display text-[20px] tracking-wide">3D 地图加载失败</div>
-              <div className="mt-3 text-sm leading-relaxed text-app-ink/65">
-                可能是浏览器 WebGL 环境异常。可以刷新重试，或先使用其它入口。
-              </div>
-            </div>
-          </div>
+          <CampusFallback
+            pois={props.pois}
+            poiOverrides={props.poiOverrides}
+            activePoiId={props.activePoiId}
+            onSelect={props.onSelect}
+          />
         }
       >
         <Canvas
