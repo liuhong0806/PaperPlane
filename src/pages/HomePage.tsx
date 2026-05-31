@@ -176,9 +176,9 @@ export default function HomePage() {
               </div>
 
               <div className="mt-5 flex flex-wrap gap-2">
-                <Pill className="bg-white/60">入口</Pill>
-                <Pill className="bg-white/60">地点联动</Pill>
-                <Pill className="bg-white/60">可演示闭环</Pill>
+                <Pill className="bg-white">入口</Pill>
+                <Pill className="bg-white">地点联动</Pill>
+                <Pill className="bg-white">可写评价</Pill>
               </div>
 
               <div className={cn('pointer-events-none absolute inset-0 bg-gradient-to-br', e.tone)} />

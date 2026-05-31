@@ -13,7 +13,7 @@ export default function FoodPage() {
   const navigate = useNavigate()
   const pois = useCampusStore((s) => s.pois)
   const reviews = useCampusStore((s) => s.reviews)
-  const [sort, setSort] = useState<SortKey>('hot')
+  const [sort, setSort] = useState<SortKey>('rating')
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {}
@@ -71,8 +71,7 @@ export default function FoodPage() {
 
       <Card className="overflow-hidden p-5">
         <div className="flex items-center justify-between gap-3">
-          <div className="font-medium">高峰小贴士（模拟）</div>
-          <Pill className="bg-app-ink/6">可扩展为真实数据</Pill>
+          <div className="font-medium">就餐小贴士</div>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <Tip title="晚高峰" desc="17:30–18:40 排队明显变长，建议错峰或先去快递点。" />
@@ -86,7 +85,7 @@ export default function FoodPage() {
 
 function Tip(props: { title: string; desc: string }) {
   return (
-    <div className="rounded-2xl border border-app-line/12 bg-white/55 px-4 py-4">
+    <div className="rounded-2xl border border-app-line/12 bg-app-ink/3 px-4 py-4">
       <div className="text-sm font-medium">{props.title}</div>
       <div className="mt-2 text-sm text-app-ink/65">{props.desc}</div>
     </div>

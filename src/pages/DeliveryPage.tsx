@@ -100,7 +100,7 @@ export default function DeliveryPage() {
         <div>
           <div className="font-display text-[26px] tracking-wide">校园配送</div>
           <div className="mt-1 text-sm text-app-ink/65">
-            支持校内食物/奶茶与校门口外卖代取，骑手实名并可定位展示（演示版）。
+            支持校内食物/奶茶与校门口外卖代取，骑手实名并可定位展示。
           </div>
         </div>
         <Card className="p-4">
@@ -185,7 +185,6 @@ export default function DeliveryPage() {
         <Card className="p-5">
           <div className="flex items-center justify-between gap-3">
             <div className="font-medium">规则与隐私</div>
-            <Pill className="bg-app-ink/6">演示版</Pill>
           </div>
           <div className="mt-4 grid gap-3 text-sm text-app-ink/70">
             <div className="rounded-2xl border border-app-line/12 bg-white/55 px-4 py-3">
@@ -376,7 +375,7 @@ function RiderPanel(props: {
         props.setRiderPos({ x: m.x, y: 0, z: m.z })
       },
       () => {
-        setGeoError('定位失败或未授权，可用“模拟移动”用于演示。')
+        setGeoError('定位失败或未授权，可用“手动移动”继续使用。')
       },
       { enableHighAccuracy: true, maximumAge: 3000, timeout: 8000 },
     )
@@ -471,7 +470,7 @@ function RiderPanel(props: {
               开启定位
             </Button>
             <Button variant="ghost" onClick={simulate}>
-              模拟移动
+              手动移动
             </Button>
             <Button variant="ghost" onClick={props.clearRiderPos}>
               清除位置
@@ -572,4 +571,3 @@ function statusLabel(status: DeliveryOrder['status']) {
   if (status === 'done') return '已完成'
   return '已取消'
 }
-

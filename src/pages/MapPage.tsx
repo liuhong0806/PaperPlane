@@ -158,7 +158,7 @@ export default function MapPage() {
         {pinMode ? (
           <div className="grid gap-2 rounded-2xl border border-app-line/10 bg-app/70 p-3 md:grid-cols-[1fr_auto] md:items-center">
             <div className="text-sm text-app-ink/70">
-              选择一个地点 → 在 3D 场景里点一下落点（会自动保存）。路演时可说“支持管理员快速标注校内地标”。
+              选择一个地点 → 在 3D 场景里点一下落点（会自动保存）。
             </div>
             <select
               className="h-10 w-full rounded-xl border border-app-line/20 bg-white/70 px-3 text-sm outline-none transition focus:border-app-accent/60 focus:ring-2 focus:ring-app-accent/20 md:w-64"

@@ -57,12 +57,12 @@ export default function PoiSheet(props: {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-black/45"
         onClick={props.onClose}
       />
 
       <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-6xl px-4 pb-4 md:inset-y-0 md:right-0 md:left-auto md:w-[460px] md:px-0 md:pb-0">
-        <Card className="relative max-h-[82dvh] overflow-hidden rounded-3xl border-app-line/20 bg-[rgb(var(--app-bg))/0.88] md:mt-20 md:max-h-[calc(100dvh-6rem)]">
+        <Card className="relative max-h-[82dvh] overflow-hidden rounded-3xl border-app-line/15 bg-white md:mt-20 md:max-h-[calc(100dvh-6rem)]">
           <div className="flex items-start justify-between gap-3 border-b border-app-line/10 px-5 py-4">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
@@ -79,7 +79,7 @@ export default function PoiSheet(props: {
             <button
               type="button"
               onClick={props.onClose}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-app-ink/5 text-app-ink/70 transition hover:bg-app-ink/10 hover:text-app-ink"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-app-ink text-app transition hover:brightness-110"
             >
               <X className="h-5 w-5" />
             </button>
@@ -113,21 +113,21 @@ export default function PoiSheet(props: {
             <div className="mt-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="font-medium">口碑精选</div>
-                <Button size="sm" variant="ghost" onClick={() => setWriting((v) => !v)}>
+                <Button size="sm" variant={list.length === 0 ? 'primary' : 'ghost'} onClick={() => setWriting((v) => !v)}>
                   {writing ? '收起' : '写评价'}
                 </Button>
               </div>
 
               <div className="mt-3 space-y-3">
                 {list.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-app-line/20 bg-white/40 px-4 py-5 text-sm text-app-ink/60">
-                    这里还没有评价，来做第一个“踩点记录”吧。
+                  <div className="rounded-2xl border border-dashed border-app-line/20 bg-app-ink/3 px-4 py-5 text-sm text-app-ink/65">
+                    暂无评价，写一条就能生成评分并同步到食堂榜单。
                   </div>
                 ) : (
                   list.slice(0, 6).map((r) => (
                     <div
                       key={r.id}
-                      className="rounded-2xl border border-app-line/12 bg-white/55 px-4 py-4"
+                      className="rounded-2xl border border-app-line/12 bg-white px-4 py-4"
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="text-sm font-medium">{r.nickname}</div>
@@ -154,7 +154,7 @@ export default function PoiSheet(props: {
               </div>
 
               {writing ? (
-                <div className="mt-4 rounded-2xl border border-app-line/15 bg-white/55 p-4">
+                <div className="mt-4 rounded-2xl border border-app-line/15 bg-app-ink/3 p-4">
                   <div className="flex flex-wrap items-center gap-2">
                     <div className="text-sm font-medium">评分</div>
                     <div className="flex items-center gap-1">
@@ -186,12 +186,10 @@ export default function PoiSheet(props: {
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
                       placeholder="说点实用的：什么时候人少、哪一口好吃、哪儿拍照更出片..."
-                      className="min-h-24 w-full resize-none rounded-2xl border border-app-line/20 bg-white/70 px-3 py-3 text-sm text-app-ink shadow-sm outline-none transition focus:border-[rgb(var(--app-accent)/0.55)] focus:ring-2 focus:ring-[rgb(var(--app-accent)/0.18)]"
+                      className="min-h-24 w-full resize-none rounded-2xl border border-app-line/20 bg-white px-3 py-3 text-sm text-app-ink shadow-sm outline-none transition focus:border-[rgb(var(--app-accent)/0.55)] focus:ring-2 focus:ring-[rgb(var(--app-accent)/0.18)]"
                     />
                     <div className="flex items-center justify-between gap-3">
-                      <div className="text-xs text-app-ink/55">
-                        评价会沉淀到地点卡片，并同步出现在口碑打卡页。
-                      </div>
+                      <div className="text-xs text-app-ink/55">发布后会更新该地点评分，并出现在口碑页。</div>
                       <Button
                         variant="primary"
                         onClick={() => {
