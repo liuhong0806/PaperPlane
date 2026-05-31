@@ -46,24 +46,8 @@ export default function CampusFallback(props: {
   }, [items])
 
   return (
-    <div className="relative h-[70dvh] overflow-hidden rounded-3xl border border-app-line/15 bg-white shadow-[0_30px_80px_-60px_rgb(0_0_0/0.35)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_25%,rgb(var(--app-accent)/0.16),transparent_55%),radial-gradient(circle_at_85%_75%,rgb(var(--app-accent-2)/0.16),transparent_55%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.75),rgba(255,255,255,0.92))]" />
-
-      <div className="absolute inset-0">
-        <svg viewBox={`${box.minX} ${box.minZ} ${box.w} ${box.h}`} className="h-full w-full">
-          <g opacity={0.16}>
-            {Array.from({ length: 12 }).map((_, i) => {
-              const x = box.minX + (box.w * (i + 1)) / 13
-              return <line key={`gx_${i}`} x1={x} y1={box.minZ} x2={x} y2={box.minZ + box.h} stroke="rgb(var(--app-line))" strokeWidth={0.3} />
-            })}
-            {Array.from({ length: 12 }).map((_, i) => {
-              const y = box.minZ + (box.h * (i + 1)) / 13
-              return <line key={`gz_${i}`} x1={box.minX} y1={y} x2={box.minX + box.w} y2={y} stroke="rgb(var(--app-line))" strokeWidth={0.3} />
-            })}
-          </g>
-        </svg>
-      </div>
+    <div className="relative h-[70dvh] overflow-hidden rounded-3xl border border-app-line/15 bg-white shadow-[0_18px_50px_-40px_rgb(0_0_0/0.28)]">
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.86),rgba(255,255,255,1))]" />
 
       <div className="relative h-full">
         {items.map(({ poi, pos }) => {
@@ -80,16 +64,15 @@ export default function CampusFallback(props: {
               type="button"
               onClick={() => props.onSelect({ poiId: poi.id })}
               className={cn(
-                'group absolute -translate-x-1/2 -translate-y-1/2 rounded-2xl border shadow-[0_16px_40px_-28px_rgb(0_0_0/0.55)] transition hover:-translate-y-[calc(50%+2px)]',
+                'group absolute -translate-x-1/2 -translate-y-1/2 rounded-2xl border transition',
                 tone.border,
                 active ? 'ring-2 ring-[rgb(var(--app-accent))] ring-offset-2 ring-offset-white' : '',
               )}
               style={{ left: `${left}%`, top: `${top}%`, width: `${w}%`, height: `${h}%` }}
             >
-              <span className={cn('absolute inset-0 rounded-2xl opacity-85', tone.fill)} />
-              <span className="absolute inset-0 rounded-2xl bg-[linear-gradient(to_bottom,rgba(255,255,255,0.18),transparent)]" />
+              <span className={cn('absolute inset-0 rounded-2xl opacity-90', tone.fill)} />
               <span className="absolute inset-0 grid place-items-center px-2">
-                <span className="truncate text-[11px] font-semibold tracking-wide text-white drop-shadow">
+                <span className="truncate text-[11px] font-semibold tracking-wide text-white">
                   {poi.name}
                 </span>
               </span>
@@ -100,4 +83,3 @@ export default function CampusFallback(props: {
     </div>
   )
 }
-
