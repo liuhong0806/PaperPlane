@@ -340,7 +340,7 @@ class CircuitSimulator {
             }
         }
         if (pa.length != pb.length) {
-            return Integer.compare(pa.length, pb.length);
+            return Integer.compare(pb.length, pa.length);
         }
         return a.compareTo(b);
     }
