@@ -318,10 +318,10 @@ class CircuitSimulator {
             return 0;
         }
         if (a == null || a.isEmpty()) {
-            return -1;
+            return 1;
         }
         if (b == null || b.isEmpty()) {
-            return 1;
+            return -1;
         }
         String[] pa = a.split("-");
         String[] pb = b.split("-");
