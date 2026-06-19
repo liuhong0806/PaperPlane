@@ -327,7 +327,7 @@ class CircuitSimulator {
         });
 
         for (Gate gate : scopeGates) {
-            sb.append(gate.fullName).append("-0:").append(gate.outputValue).append('\n');
+            sb.append(formatGateOutputName(gate)).append("-0:").append(gate.outputValue).append('\n');
         }
     }
 
@@ -340,6 +340,18 @@ class CircuitSimulator {
         if (!list.contains(childScope)) {
             list.add(childScope);
         }
+    }
+
+    private String formatGateOutputName(Gate gate) {
+        String scope = gate.prefix == null ? "" : gate.prefix;
+        if (scope.isEmpty()) {
+            return gate.fullName;
+        }
+        String[] parts = scope.split("-");
+        String currentSubCircuitId = parts[parts.length - 1];
+        int dash = gate.fullName.lastIndexOf('-');
+        String localGateName = dash == -1 ? gate.fullName : gate.fullName.substring(dash + 1);
+        return currentSubCircuitId + "-" + localGateName;
     }
 
     private String extractSubCircuitId(String token) {
