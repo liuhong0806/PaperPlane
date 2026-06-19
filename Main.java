@@ -20,6 +20,7 @@ public class Main {
 
 class CircuitSimulator {
     private final Map<String, SubCircuit> subCircuits = new LinkedHashMap<>();
+    private final Map<String, Integer> subCircuitDefineOrder = new HashMap<>();
     private final List<String[]> mainConnections = new ArrayList<>();
     private final Map<String, Integer> topInputValues = new HashMap<>();
     private final Set<String> topInputs = new LinkedHashSet<>();
@@ -28,8 +29,6 @@ class CircuitSimulator {
     private final Map<String, String> destToSrc = new HashMap<>();
     private final Map<String, Integer> signals = new HashMap<>();
     private final Map<String, Gate> gates = new LinkedHashMap<>();
-    private final Map<String, Integer> instanceOrder = new HashMap<>();
-    private int nextInstanceOrder = 0;
 
     public void run(List<String> lines) {
         parse(lines);
@@ -59,6 +58,7 @@ class CircuitSimulator {
                 idx++;
             }
             subCircuits.put(subId, sub);
+            subCircuitDefineOrder.put(subId, subCircuitDefineOrder.size());
             idx++;
         }
 
@@ -153,8 +153,6 @@ class CircuitSimulator {
 
     private void expandUsedSubCircuits() {
         expandedConnections.clear();
-        instanceOrder.clear();
-        nextInstanceOrder = 0;
         expandedConnections.addAll(mainConnections);
         Set<String> expandedInstances = new HashSet<>();
         for (String[] connection : mainConnections) {
@@ -171,7 +169,6 @@ class CircuitSimulator {
         if (!expandedInstances.add(instancePrefix)) {
             return;
         }
-        instanceOrder.put(instancePrefix, nextInstanceOrder++);
         SubCircuit sub = subCircuits.get(subId);
         if (sub == null) {
             return;
@@ -279,7 +276,7 @@ class CircuitSimulator {
         outputList.sort(new Comparator<Gate>() {
             @Override
             public int compare(Gate a, Gate b) {
-                int prefixCompare = Integer.compare(scopeOrder(a.prefix), scopeOrder(b.prefix));
+                int prefixCompare = compareScope(a.prefix, b.prefix);
                 if (prefixCompare != 0) {
                     return prefixCompare;
                 }
@@ -321,15 +318,42 @@ class CircuitSimulator {
         }
     }
 
-    private int scopeOrder(String prefix) {
-        if (prefix == null || prefix.isEmpty()) {
-            return Integer.MAX_VALUE;
+    private int compareScope(String a, String b) {
+        if ((a == null || a.isEmpty()) && (b == null || b.isEmpty())) {
+            return 0;
         }
-        Integer order = instanceOrder.get(prefix);
-        if (order != null) {
-            return order;
+        if (a == null || a.isEmpty()) {
+            return 1;
         }
-        return Integer.MAX_VALUE - 1;
+        if (b == null || b.isEmpty()) {
+            return -1;
+        }
+
+        String[] pa = a.split("-");
+        String[] pb = b.split("-");
+        int len = Math.min(pa.length, pb.length);
+        for (int i = 0; i < len; i++) {
+            int va = circuitOrder(pa[i]);
+            int vb = circuitOrder(pb[i]);
+            if (va != vb) {
+                return Integer.compare(va, vb);
+            }
+        }
+        if (pa.length != pb.length) {
+            return Integer.compare(pa.length, pb.length);
+        }
+        return a.compareTo(b);
+    }
+
+    private int circuitOrder(String name) {
+        Integer defineOrder = subCircuitDefineOrder.get(name);
+        if (defineOrder != null) {
+            return defineOrder;
+        }
+        if (name != null && name.length() > 1 && name.charAt(0) == 'C' && isNumber(name.substring(1))) {
+            return 1000000 + Integer.parseInt(name.substring(1));
+        }
+        return Integer.MAX_VALUE / 2;
     }
 
     private String extractSubCircuitId(String token) {
