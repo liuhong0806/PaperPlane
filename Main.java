@@ -28,6 +28,8 @@ class CircuitSimulator {
     private final Map<String, String> destToSrc = new HashMap<>();
     private final Map<String, Integer> signals = new HashMap<>();
     private final Map<String, Gate> gates = new LinkedHashMap<>();
+    private final Map<String, Integer> instanceOrder = new HashMap<>();
+    private int nextInstanceOrder = 0;
 
     public void run(List<String> lines) {
         parse(lines);
@@ -151,6 +153,8 @@ class CircuitSimulator {
 
     private void expandUsedSubCircuits() {
         expandedConnections.clear();
+        instanceOrder.clear();
+        nextInstanceOrder = 0;
         expandedConnections.addAll(mainConnections);
         Set<String> expandedInstances = new HashSet<>();
         for (String[] connection : mainConnections) {
@@ -167,6 +171,7 @@ class CircuitSimulator {
         if (!expandedInstances.add(instancePrefix)) {
             return;
         }
+        instanceOrder.put(instancePrefix, nextInstanceOrder++);
         SubCircuit sub = subCircuits.get(subId);
         if (sub == null) {
             return;
@@ -274,6 +279,10 @@ class CircuitSimulator {
         outputList.sort(new Comparator<Gate>() {
             @Override
             public int compare(Gate a, Gate b) {
+                int prefixCompare = Integer.compare(scopeOrder(a.prefix), scopeOrder(b.prefix));
+                if (prefixCompare != 0) {
+                    return prefixCompare;
+                }
                 int typeCompare = Integer.compare(typeOrder(a.type), typeOrder(b.type));
                 if (typeCompare != 0) {
                     return typeCompare;
@@ -281,10 +290,6 @@ class CircuitSimulator {
                 int idCompare = Integer.compare(a.id, b.id);
                 if (idCompare != 0) {
                     return idCompare;
-                }
-                int prefixCompare = comparePrefix(a.prefix, b.prefix);
-                if (prefixCompare != 0) {
-                    return prefixCompare;
                 }
                 return a.fullName.compareTo(b.fullName);
             }
@@ -316,37 +321,15 @@ class CircuitSimulator {
         }
     }
 
-    private int comparePrefix(String a, String b) {
-        if ((a == null || a.isEmpty()) && (b == null || b.isEmpty())) {
-            return 0;
+    private int scopeOrder(String prefix) {
+        if (prefix == null || prefix.isEmpty()) {
+            return Integer.MAX_VALUE;
         }
-        if (a == null || a.isEmpty()) {
-            return 1;
+        Integer order = instanceOrder.get(prefix);
+        if (order != null) {
+            return order;
         }
-        if (b == null || b.isEmpty()) {
-            return -1;
-        }
-        String[] pa = a.split("-");
-        String[] pb = b.split("-");
-        int len = Math.min(pa.length, pb.length);
-        for (int i = 0; i < len; i++) {
-            int va = parseCircuitIndex(pa[i]);
-            int vb = parseCircuitIndex(pb[i]);
-            if (va != vb) {
-                return Integer.compare(va, vb);
-            }
-        }
-        if (pa.length != pb.length) {
-            return Integer.compare(pa.length, pb.length);
-        }
-        return a.compareTo(b);
-    }
-
-    private int parseCircuitIndex(String name) {
-        if (name != null && name.length() > 1 && name.charAt(0) == 'C' && isNumber(name.substring(1))) {
-            return Integer.parseInt(name.substring(1));
-        }
-        return Integer.MAX_VALUE;
+        return Integer.MAX_VALUE - 1;
     }
 
     private String extractSubCircuitId(String token) {
