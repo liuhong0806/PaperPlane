@@ -212,6 +212,9 @@ class CircuitSimulator {
         if (dash == -1) {
             return null;
         }
+        if (isSubCircuitPortToken(token)) {
+            return null;
+        }
         String suffix = token.substring(dash + 1);
         if (!isNumber(suffix)) {
             return null;
@@ -351,12 +354,9 @@ class CircuitSimulator {
         if (dash == -1) {
             return null;
         }
-        String suffix = token.substring(dash + 1);
-        if (isNumber(suffix)) {
-            return null;
-        }
         String prefix = token.substring(0, dash);
-        if (subCircuits.containsKey(prefix)) {
+        String suffix = token.substring(dash + 1);
+        if (isDirectSubCircuitPortReference(prefix, suffix)) {
             return prefix;
         }
         return null;
@@ -369,10 +369,28 @@ class CircuitSimulator {
         }
         String prefix = token.substring(0, dash);
         String suffix = token.substring(dash + 1);
-        if (subCircuits.containsKey(prefix) && !isNumber(suffix)) {
+        if (isDirectSubCircuitPortReference(prefix, suffix)) {
             return prefix;
         }
         return null;
+    }
+
+    private boolean isSubCircuitPortToken(String token) {
+        int dash = token.lastIndexOf('-');
+        if (dash == -1) {
+            return false;
+        }
+        String prefix = token.substring(0, dash);
+        String suffix = token.substring(dash + 1);
+        return isDirectSubCircuitPortReference(prefix, suffix);
+    }
+
+    private boolean isDirectSubCircuitPortReference(String prefix, String suffix) {
+        SubCircuit sub = subCircuits.get(prefix);
+        if (sub == null) {
+            return false;
+        }
+        return sub.inputs.contains(suffix) || sub.outputs.contains(suffix);
     }
 
     private boolean isConnectionLine(String line) {
@@ -452,11 +470,14 @@ class Context {
         int dash = token.lastIndexOf('-');
         String prefix = token.substring(0, dash);
         String suffix = token.substring(dash + 1);
+        SubCircuit sub = subCircuits.get(prefix);
+        if (sub != null) {
+            return sub.outputs.contains(suffix);
+        }
         if (isNumber(suffix)) {
             return "0".equals(suffix);
         }
-        SubCircuit sub = subCircuits.get(prefix);
-        return sub != null && sub.outputs.contains(suffix);
+        return false;
     }
 
     boolean isDestination(String token) {
@@ -467,11 +488,14 @@ class Context {
         int dash = token.lastIndexOf('-');
         String prefix = token.substring(0, dash);
         String suffix = token.substring(dash + 1);
+        SubCircuit sub = subCircuits.get(prefix);
+        if (sub != null) {
+            return sub.inputs.contains(suffix);
+        }
         if (isNumber(suffix)) {
             return !"0".equals(suffix);
         }
-        SubCircuit sub = subCircuits.get(prefix);
-        return sub != null && sub.inputs.contains(suffix);
+        return false;
     }
 
     private boolean isNumber(String s) {
