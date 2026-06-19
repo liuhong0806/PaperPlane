@@ -1,24 +1,11 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
         List<String> lines = new ArrayList<>();
-        String line;
-        while ((line = br.readLine()) != null) {
+        while (sc.hasNextLine()) {
+            String line = sc.nextLine();
             line = line.replace('：', ':').trim();
             if ("end".equals(line)) {
                 break;
@@ -95,7 +82,7 @@ class CircuitSimulator {
 
     private String validateAll() {
         for (SubCircuit sub : subCircuits.values()) {
-            Context context = new Context(sub.inputs, sub.outputs, Collections.emptyMap());
+            Context context = new Context(sub.inputs, sub.outputs, subCircuits);
             Map<String, String> localDestMap = new HashMap<>();
             for (String[] connection : sub.connections) {
                 String error = validateConnection(connection, context, localDestMap);
@@ -163,28 +150,40 @@ class CircuitSimulator {
     }
 
     private void expandUsedSubCircuits() {
+        expandedConnections.clear();
         expandedConnections.addAll(mainConnections);
-        Set<String> usedSubCircuits = new LinkedHashSet<>();
+        Set<String> expandedInstances = new HashSet<>();
         for (String[] connection : mainConnections) {
             for (String token : connection) {
                 String subId = extractSubCircuitId(token);
                 if (subId != null) {
-                    usedSubCircuits.add(subId);
+                    expandSubCircuitInstance(subId, subId, expandedInstances);
                 }
             }
         }
+    }
 
-        for (String subId : usedSubCircuits) {
-            SubCircuit sub = subCircuits.get(subId);
-            if (sub == null) {
-                continue;
+    private void expandSubCircuitInstance(String instancePrefix, String subId, Set<String> expandedInstances) {
+        if (!expandedInstances.add(instancePrefix)) {
+            return;
+        }
+        SubCircuit sub = subCircuits.get(subId);
+        if (sub == null) {
+            return;
+        }
+
+        for (String[] connection : sub.connections) {
+            String[] expanded = new String[connection.length];
+            for (int i = 0; i < connection.length; i++) {
+                expanded[i] = instancePrefix + "-" + connection[i];
             }
-            for (String[] connection : sub.connections) {
-                String[] expanded = new String[connection.length];
-                for (int i = 0; i < connection.length; i++) {
-                    expanded[i] = subId + "-" + connection[i];
+            expandedConnections.add(expanded);
+
+            for (String token : connection) {
+                String innerSubId = extractSubCircuitIdFromDefinitionToken(token);
+                if (innerSubId != null) {
+                    expandSubCircuitInstance(instancePrefix + "-" + innerSubId, innerSubId, expandedInstances);
                 }
-                expandedConnections.add(expanded);
             }
         }
     }
@@ -221,13 +220,10 @@ class CircuitSimulator {
         String gateName = token.substring(0, dash);
         String prefix = "";
         String baseName = gateName;
-        int firstDash = gateName.indexOf('-');
-        if (firstDash > 0) {
-            String maybePrefix = gateName.substring(0, firstDash);
-            if (maybePrefix.matches("C\\d+")) {
-                prefix = maybePrefix;
-                baseName = gateName.substring(firstDash + 1);
-            }
+        int gateDash = gateName.lastIndexOf('-');
+        if (gateDash > 0) {
+            prefix = gateName.substring(0, gateDash);
+            baseName = gateName.substring(gateDash + 1);
         }
 
         char type = baseName.charAt(0);
@@ -283,7 +279,7 @@ class CircuitSimulator {
                 if (idCompare != 0) {
                     return idCompare;
                 }
-                int prefixCompare = Integer.compare(prefixOrder(a.prefix), prefixOrder(b.prefix));
+                int prefixCompare = comparePrefix(a.prefix, b.prefix);
                 if (prefixCompare != 0) {
                     return prefixCompare;
                 }
@@ -317,11 +313,37 @@ class CircuitSimulator {
         }
     }
 
-    private int prefixOrder(String prefix) {
-        if (prefix == null || prefix.isEmpty()) {
+    private int comparePrefix(String a, String b) {
+        if ((a == null || a.isEmpty()) && (b == null || b.isEmpty())) {
+            return 0;
+        }
+        if (a == null || a.isEmpty()) {
             return -1;
         }
-        return Integer.parseInt(prefix.substring(1));
+        if (b == null || b.isEmpty()) {
+            return 1;
+        }
+        String[] pa = a.split("-");
+        String[] pb = b.split("-");
+        int len = Math.min(pa.length, pb.length);
+        for (int i = 0; i < len; i++) {
+            int va = parseCircuitIndex(pa[i]);
+            int vb = parseCircuitIndex(pb[i]);
+            if (va != vb) {
+                return Integer.compare(va, vb);
+            }
+        }
+        if (pa.length != pb.length) {
+            return Integer.compare(pa.length, pb.length);
+        }
+        return a.compareTo(b);
+    }
+
+    private int parseCircuitIndex(String name) {
+        if (name != null && name.length() > 1 && name.charAt(0) == 'C' && isNumber(name.substring(1))) {
+            return Integer.parseInt(name.substring(1));
+        }
+        return Integer.MAX_VALUE;
     }
 
     private String extractSubCircuitId(String token) {
@@ -335,6 +357,19 @@ class CircuitSimulator {
         }
         String prefix = token.substring(0, dash);
         if (subCircuits.containsKey(prefix)) {
+            return prefix;
+        }
+        return null;
+    }
+
+    private String extractSubCircuitIdFromDefinitionToken(String token) {
+        int dash = token.indexOf('-');
+        if (dash == -1) {
+            return null;
+        }
+        String prefix = token.substring(0, dash);
+        String suffix = token.substring(dash + 1);
+        if (subCircuits.containsKey(prefix) && !isNumber(suffix)) {
             return prefix;
         }
         return null;
