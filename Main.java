@@ -29,6 +29,7 @@ class CircuitSimulator {
     private final Map<String, String> destToSrc = new HashMap<>();
     private final Map<String, Integer> signals = new HashMap<>();
     private final Map<String, Gate> gates = new LinkedHashMap<>();
+    private final Map<String, List<String>> childInstanceOrder = new HashMap<>();
 
     public void run(List<String> lines) {
         parse(lines);
@@ -153,12 +154,14 @@ class CircuitSimulator {
 
     private void expandUsedSubCircuits() {
         expandedConnections.clear();
+        childInstanceOrder.clear();
         expandedConnections.addAll(mainConnections);
         Set<String> expandedInstances = new HashSet<>();
         for (String[] connection : mainConnections) {
             for (String token : connection) {
                 String subId = extractSubCircuitId(token);
                 if (subId != null) {
+                    addChildInstance("", subId);
                     expandSubCircuitInstance(subId, subId, expandedInstances);
                 }
             }
@@ -184,7 +187,9 @@ class CircuitSimulator {
             for (String token : connection) {
                 String innerSubId = extractSubCircuitIdFromDefinitionToken(token);
                 if (innerSubId != null) {
-                    expandSubCircuitInstance(instancePrefix + "-" + innerSubId, innerSubId, expandedInstances);
+                    String childPrefix = instancePrefix + "-" + innerSubId;
+                    addChildInstance(instancePrefix, childPrefix);
+                    expandSubCircuitInstance(childPrefix, innerSubId, expandedInstances);
                 }
             }
         }
@@ -266,36 +271,8 @@ class CircuitSimulator {
     }
 
     private void printOutputs() {
-        List<Gate> outputList = new ArrayList<>();
-        for (Gate gate : gates.values()) {
-            if (gate.outputKnown) {
-                outputList.add(gate);
-            }
-        }
-
-        outputList.sort(new Comparator<Gate>() {
-            @Override
-            public int compare(Gate a, Gate b) {
-                int prefixCompare = compareScope(a.prefix, b.prefix);
-                if (prefixCompare != 0) {
-                    return prefixCompare;
-                }
-                int typeCompare = Integer.compare(typeOrder(a.type), typeOrder(b.type));
-                if (typeCompare != 0) {
-                    return typeCompare;
-                }
-                int idCompare = Integer.compare(a.id, b.id);
-                if (idCompare != 0) {
-                    return idCompare;
-                }
-                return a.fullName.compareTo(b.fullName);
-            }
-        });
-
         StringBuilder sb = new StringBuilder();
-        for (Gate gate : outputList) {
-            sb.append(gate.fullName).append("-0:").append(gate.outputValue).append('\n');
-        }
+        appendScopeOutputs("", sb);
         if (sb.length() > 0) {
             System.out.print(sb);
         }
@@ -318,42 +295,51 @@ class CircuitSimulator {
         }
     }
 
-    private int compareScope(String a, String b) {
-        if ((a == null || a.isEmpty()) && (b == null || b.isEmpty())) {
-            return 0;
-        }
-        if (a == null || a.isEmpty()) {
-            return 1;
-        }
-        if (b == null || b.isEmpty()) {
-            return -1;
-        }
-
-        String[] pa = a.split("-");
-        String[] pb = b.split("-");
-        int len = Math.min(pa.length, pb.length);
-        for (int i = 0; i < len; i++) {
-            int va = circuitOrder(pa[i]);
-            int vb = circuitOrder(pb[i]);
-            if (va != vb) {
-                return Integer.compare(va, vb);
+    private void appendScopeOutputs(String scope, StringBuilder sb) {
+        List<String> children = childInstanceOrder.get(scope);
+        if (children != null) {
+            for (String child : children) {
+                appendScopeOutputs(child, sb);
             }
         }
-        if (pa.length != pb.length) {
-            return Integer.compare(pb.length, pa.length);
+
+        List<Gate> scopeGates = new ArrayList<>();
+        for (Gate gate : gates.values()) {
+            String gateScope = gate.prefix == null ? "" : gate.prefix;
+            if (gate.outputKnown && gateScope.equals(scope)) {
+                scopeGates.add(gate);
+            }
         }
-        return a.compareTo(b);
+
+        scopeGates.sort(new Comparator<Gate>() {
+            @Override
+            public int compare(Gate a, Gate b) {
+                int typeCompare = Integer.compare(typeOrder(a.type), typeOrder(b.type));
+                if (typeCompare != 0) {
+                    return typeCompare;
+                }
+                int idCompare = Integer.compare(a.id, b.id);
+                if (idCompare != 0) {
+                    return idCompare;
+                }
+                return a.fullName.compareTo(b.fullName);
+            }
+        });
+
+        for (Gate gate : scopeGates) {
+            sb.append(gate.fullName).append("-0:").append(gate.outputValue).append('\n');
+        }
     }
 
-    private int circuitOrder(String name) {
-        Integer defineOrder = subCircuitDefineOrder.get(name);
-        if (defineOrder != null) {
-            return defineOrder;
+    private void addChildInstance(String parentScope, String childScope) {
+        List<String> list = childInstanceOrder.get(parentScope);
+        if (list == null) {
+            list = new ArrayList<>();
+            childInstanceOrder.put(parentScope, list);
         }
-        if (name != null && name.length() > 1 && name.charAt(0) == 'C' && isNumber(name.substring(1))) {
-            return 1000000 + Integer.parseInt(name.substring(1));
+        if (!list.contains(childScope)) {
+            list.add(childScope);
         }
-        return Integer.MAX_VALUE / 2;
     }
 
     private String extractSubCircuitId(String token) {
